@@ -88,6 +88,11 @@ function scene:create( event )
 	sceneGroup:insert( player )
 	sceneGroup:insert( ball )
 
+	-- 
+	-- PLAYER
+	-- 
+    physics.addBody( player, { density=3, friction=0.3, bounce=0 } )
+
 	createStick()
 end
 
@@ -125,8 +130,6 @@ function createStick()
 
     stick.x = display.screenOriginX + 80
     stick.y = screenH - 120
-
-    physics.addBody( player, { density=3, friction=0.3, bounce=0.3, outline=background } )
 end
 
 function scene:show( event )
