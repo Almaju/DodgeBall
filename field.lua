@@ -1,66 +1,54 @@
 -----------------------------------------------------------------------------------------
 --
--- menu.lua
+-- level1.lua
 --
 -----------------------------------------------------------------------------------------
-
 local composer = require( "composer" )
 local scene = composer.newScene()
+local vjoy = require "com.ponywolf.vjoy"
 
--- include Corona's "widget" library
-local widget = require "widget"
+-- include Corona's "physics" library
+local physics = require "physics"
 
 --------------------------------------------
 
 -- forward declarations and other locals
-local playBtn
-
--- 'onRelease' event listener for playBtn
-local function onPlayBtnRelease()
-	
-	-- go to level1.lua scene
-	composer.gotoScene( "field", "fade", 500 )
-	
-	return true	-- indicates successful touch
-end
+local screenW, screenH, halfW = display.actualContentWidth, display.actualContentHeight, display.contentCenterX
 
 function scene:create( event )
-	local sceneGroup = self.view
 
 	-- Called when the scene's view does not exist.
 	-- 
 	-- INSERT code here to initialize the scene
 	-- e.g. add display objects to 'sceneGroup', add touch listeners, etc.
 
-	-- display a background image
-	local background = display.newImageRect( "background.jpg", display.actualContentWidth, display.actualContentHeight )
-	background.anchorX = 0
+	local sceneGroup = self.view
+
+	-- We need physics started to add bodies, but we don't want the simulaton
+	-- running until the scene is on the screen.
+	physics.start()
+	physics.pause()
+
+
+	-- create a grey rectangle as the backdrop
+	-- the physical screen will likely be a different shape than our defined content area
+	-- since we are going to position the background from it's top, left corner, draw the
+	-- background at the real top, left corner.
+	local background = display.newRect( display.screenOriginX, display.screenOriginY, screenW, screenH )
+	background.anchorX = 0 
 	background.anchorY = 0
-	background.x = 0 + display.screenOriginX 
-	background.y = 0 + display.screenOriginY
-	
-	-- create/position logo/title image on upper-half of the screen
-	local titleLogo = display.newImageRect( "logo.png", 264, 42 )
-	titleLogo.x = display.contentCenterX
-	titleLogo.y = 100
-	
-	-- create a widget button (which will loads level1.lua on release)
-	playBtn = widget.newButton{
-		label = "Play Now",
-		labelColor = { default={ 1.0 }, over={ 0.5 } },
-		defaultFile = "button.png",
-		overFile = "button-over.png",
-		width = 154, height = 40,
-		onRelease = onPlayBtnRelease	-- event listener function
-	}
-	playBtn.x = display.contentCenterX
-	playBtn.y = display.contentHeight - 125
+	background:setFillColor( 0.15, 0.27, 0.33 )
+
+    local player = display.newCircle( display.contentCenterX, display.contentCenterY, 10, 10 )
+    player:setFillColor( 0.90, 0.44, 0.32 )
 	
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
-	sceneGroup:insert( titleLogo )
-	sceneGroup:insert( playBtn )
+	sceneGroup:insert( player )
+
+    vjoy.newStick( )
 end
+
 
 function scene:show( event )
 	local sceneGroup = self.view
@@ -73,11 +61,13 @@ function scene:show( event )
 		-- 
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
-	end	
+		physics.start()
+	end
 end
 
 function scene:hide( event )
 	local sceneGroup = self.view
+	
 	local phase = event.phase
 	
 	if event.phase == "will" then
@@ -85,23 +75,23 @@ function scene:hide( event )
 		--
 		-- INSERT code here to pause the scene
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
+		physics.stop()
 	elseif phase == "did" then
 		-- Called when the scene is now off screen
 	end	
+	
 end
 
 function scene:destroy( event )
-	local sceneGroup = self.view
-	
+
 	-- Called prior to the removal of scene's "view" (sceneGroup)
 	-- 
 	-- INSERT code here to cleanup the scene
 	-- e.g. remove display objects, remove touch listeners, save state, etc.
+	local sceneGroup = self.view
 	
-	if playBtn then
-		playBtn:removeSelf()	-- widgets must be manually removed
-		playBtn = nil
-	end
+	package.loaded[physics] = nil
+	physics = nil
 end
 
 ---------------------------------------------------------------------------------
