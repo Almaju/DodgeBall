@@ -6,11 +6,15 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 local vjoy = require "com.ponywolf.vjoy"
+local joykey = require "com.ponywolf.joykey"
 
 -- include Corona's "physics" library
 local physics = require "physics"
 
 --------------------------------------------
+
+local player = display.newCircle( display.contentCenterX, display.contentCenterY, 10, 10 )
+player:setFillColor( 0.90, 0.44, 0.32 )
 
 -- forward declarations and other locals
 local screenW, screenH, halfW, halfH = display.actualContentWidth, display.actualContentHeight, display.contentCenterX, display.contentCenterY
@@ -40,9 +44,6 @@ function scene:create( event )
 	background.anchorX = 0 
 	background.anchorY = 0
 	background:setFillColor( 0.15, 0.27, 0.33 )
-
-    local player = display.newCircle( display.contentCenterX, display.contentCenterY, 10, 10 )
-    player:setFillColor( 0.90, 0.44, 0.32 )
 
     -- 
     -- BALL
@@ -81,7 +82,7 @@ function scene:create( event )
     end
 
     actionButton:addEventListener( "tap", onBallTap )
-	
+
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
 	sceneGroup:insert( player )
@@ -90,10 +91,42 @@ function scene:create( event )
 	createStick()
 end
 
+-- Called when an event from the joystick has been reveived
+local function onAxisEvent( event )
+	local velocityMultiplier = 200
+
+	if ( event.axis.number == 1 ) then
+	    -- x value
+    	local vx, vy = player:getLinearVelocity()
+    	player:setLinearVelocity( event.normalizedValue * velocityMultiplier, vy)
+	end
+	if ( event.axis.number == 2 ) then
+	    -- y value
+    	local vx, vy = player:getLinearVelocity()
+    	player:setLinearVelocity( vx, event.normalizedValue * velocityMultiplier)
+	end
+
+    -- If the "back" key was pressed on Android, prevent it from backing out of the app
+    if ( event.keyName == "back" ) then
+        if ( system.getInfo("platform") == "android" ) then
+            return true
+        end
+    end
+
+    -- IMPORTANT! Return false to indicate that this app is NOT overriding the received key
+    -- This lets the operating system execute its default handling of the key
+    return false
+end
+
 function createStick()
-    local stick = vjoy.newStick( 1, 20, 62 )
-    stick.x = 100
-    stick.y = 440
+	local innerRadius = 20
+	local outerRadius = 62
+    local stick = vjoy.newStick( 1, innerRadius, outerRadius )
+
+    stick.x = screenW / 2
+    stick.y = screenH - 120
+
+    physics.addBody( player, { density=0.5, friction=0.3, bounce=0.3, radius=25, outline=background } )
 end
 
 function scene:show( event )
@@ -147,6 +180,7 @@ scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
+Runtime:addEventListener( "axis", onAxisEvent )
 
 -----------------------------------------------------------------------------------------
 
