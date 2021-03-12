@@ -56,7 +56,7 @@ function scene:create( event )
     -- CONTAINER
     --
     local topBorder = display.newRect( halfW, display.screenOriginY, screenW, 5 )
-    local bottomBorder = display.newRect( halfW, screenH - 45, screenW, 5 )
+    local bottomBorder = display.newRect( halfW, screenH, screenW, 5 )
     local leftBorder = display.newRect( display.screenOriginX, halfH, 5, screenH )
     local rightBorder = display.newRect( screenW, halfH, 5, screenH )
     topBorder:setFillColor( 1, 0, 0 ) -- red
