@@ -13,7 +13,7 @@ local physics = require "physics"
 --------------------------------------------
 
 -- forward declarations and other locals
-local screenW, screenH, halfW = display.actualContentWidth, display.actualContentHeight, display.contentCenterX
+local screenW, screenH, halfW, halfH = display.actualContentWidth, display.actualContentHeight, display.contentCenterX, display.contentCenterY
 
 function scene:create( event )
 
@@ -49,23 +49,23 @@ function scene:create( event )
     --
     local ball = display.newCircle( display.contentCenterX, display.contentCenterY + 20, 5, 5 )
     ball:setFillColor( 1, 1, 1 )
-    physics.addBody( ball, { density=0.5, friction=0.3, bounce=0.3, radius=25, outline=background } )
+    physics.addBody( ball, { density=0.5, friction=0.3, bounce=0.3, radius=25 } )
 
     --
     -- CONTAINER
     --
-    -- local topBorder = display.newRect( 0, 0, display.actualContentWidth, 10 )
-    -- local bottomBorder = display.newRect( 0, display.actualContentHeight, display.actualContentWidth, 10 )
-    -- local leftBorder = display.newRect( 0, 0, 10, display.actualContentHeight )
-    -- local rightBorder = display.newRect( display.actualContentWidth, 0, 10, display.actualContentHeight )
-    -- topBorder:setFillColor( 1, 0, 0 ) -- red
-    -- bottomBorder:setFillColor( 0, 1, 0 ) -- green
-    -- leftBorder:setFillColor( 0, 0, 1 ) -- blue
-    -- rightBorder:setFillColor( 1, 1, 1 ) -- white
-    -- physics.addBody( topBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    -- physics.addBody( bottomBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    -- physics.addBody( leftBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    -- physics.addBody( rightBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+    local topBorder = display.newRect( halfW, display.screenOriginY, screenW, 5 )
+    local bottomBorder = display.newRect( halfW, screenH - 45, screenW, 5 )
+    local leftBorder = display.newRect( display.screenOriginX, halfH, 5, screenH )
+    local rightBorder = display.newRect( screenW, halfH, 5, screenH )
+    topBorder:setFillColor( 1, 0, 0 ) -- red
+    bottomBorder:setFillColor( 0, 1, 0 ) -- green
+    leftBorder:setFillColor( 0, 0, 1 ) -- blue
+    rightBorder:setFillColor( 1, 1, 1 ) -- white
+    physics.addBody( topBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+    physics.addBody( bottomBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+    physics.addBody( leftBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+    physics.addBody( rightBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
 
     -- 
     -- ACTION BUTTON
