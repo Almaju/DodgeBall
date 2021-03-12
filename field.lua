@@ -50,7 +50,7 @@ function scene:create( event )
     --
     local ball = display.newCircle( display.contentCenterX, display.contentCenterY + 20, 5, 5 )
     ball:setFillColor( 1, 1, 1 )
-    physics.addBody( ball, { density=0.5, friction=0.3, bounce=0.3, radius=25 } )
+    physics.addBody( ball, { density=0.5, friction=0.3, bounce=0.3 } )
 
     --
     -- CONTAINER
@@ -123,10 +123,10 @@ function createStick()
 	local outerRadius = 62
     local stick = vjoy.newStick( 1, innerRadius, outerRadius )
 
-    stick.x = screenW / 2
+    stick.x = display.screenOriginX + 80
     stick.y = screenH - 120
 
-    physics.addBody( player, { density=0.5, friction=0.3, bounce=0.3, radius=25, outline=background } )
+    physics.addBody( player, { density=3, friction=0.3, bounce=0.3, outline=background } )
 end
 
 function scene:show( event )
