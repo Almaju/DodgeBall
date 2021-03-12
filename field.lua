@@ -29,6 +29,8 @@ function scene:create( event )
 	physics.start()
 	physics.pause()
 
+    -- Remove gravity
+    physics.setGravity( 0, 0 )
 
 	-- create a grey rectangle as the backdrop
 	-- the physical screen will likely be a different shape than our defined content area
@@ -41,17 +43,56 @@ function scene:create( event )
 
     local player = display.newCircle( display.contentCenterX, display.contentCenterY, 10, 10 )
     player:setFillColor( 0.90, 0.44, 0.32 )
+
+    -- 
+    -- BALL
+    --
+    local ball = display.newCircle( display.contentCenterX, display.contentCenterY + 20, 5, 5 )
+    ball:setFillColor( 1, 1, 1 )
+    physics.addBody( ball, { density=0.5, friction=0.3, bounce=0.3, radius=25, outline=background } )
+
+    --
+    -- CONTAINER
+    --
+    -- local topBorder = display.newRect( 0, 0, display.actualContentWidth, 10 )
+    -- local bottomBorder = display.newRect( 0, display.actualContentHeight, display.actualContentWidth, 10 )
+    -- local leftBorder = display.newRect( 0, 0, 10, display.actualContentHeight )
+    -- local rightBorder = display.newRect( display.actualContentWidth, 0, 10, display.actualContentHeight )
+    -- topBorder:setFillColor( 1, 0, 0 ) -- red
+    -- bottomBorder:setFillColor( 0, 1, 0 ) -- green
+    -- leftBorder:setFillColor( 0, 0, 1 ) -- blue
+    -- rightBorder:setFillColor( 1, 1, 1 ) -- white
+    -- physics.addBody( topBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+    -- physics.addBody( bottomBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+    -- physics.addBody( leftBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+    -- physics.addBody( rightBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+
+    -- 
+    -- ACTION BUTTON
+    --
+    local actionButton = vjoy.newButton( 32, "actionButton" )
+    actionButton.x = display.actualContentWidth - 64
+    actionButton.y = display.actualContentHeight - 128
+    
+    local function onBallTap( event )
+        ball:setLinearVelocity( 2, 4 )
+        ball:applyForce( 500, 2000, ball.x, ball.y )
+        return true
+    end
+
+    actionButton:addEventListener( "tap", onBallTap )
 	
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
 	sceneGroup:insert( player )
+	sceneGroup:insert( ball )
 
 	createStick()
 end
 
 function createStick()
     local stick = vjoy.newStick( 1, 20, 62 )
-    stick.x = 160
+    stick.x = 100
     stick.y = 440
 end
 
