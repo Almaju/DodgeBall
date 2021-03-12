@@ -46,9 +46,14 @@ function scene:create( event )
 	sceneGroup:insert( background )
 	sceneGroup:insert( player )
 
-    vjoy.newStick( )
+	createStick()
 end
 
+function createStick()
+    local stick = vjoy.newStick( 1, 20, 62 )
+    stick.x = 160
+    stick.y = 440
+end
 
 function scene:show( event )
 	local sceneGroup = self.view
