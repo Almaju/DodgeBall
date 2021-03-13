@@ -112,7 +112,7 @@ end
 -- Called when an event from the joystick has been reveived
 local function onAxisEvent( event )
 	local xAxisNumber = 1
-	local yAxisNumber = 1
+	local yAxisNumber = 2
 
 	if ( event.axis.number == xAxisNumber ) then
 		player:setXVelocity(event.normalizedValue)
