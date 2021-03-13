@@ -7,7 +7,7 @@ function _M.newBall(params)
     ball:setFillColor( 1, 1, 1 )
 
     function ball:addBody(args)
-        args.bounce = args.density or 0.3
+        args.bounce = args.bounce or 0.3
         args.density = args.density or 0.5
         args.friction = args.friction or 0.3
         args.radius = args.radius or ball.width / 2 

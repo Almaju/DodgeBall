@@ -15,8 +15,6 @@ function _M.newField(params)
     local halfX = (endX - startX) / 2
     local halfY = (endY - startY) / 2
 
-    print(startX, startY, endX, endY, halfX, halfY)
-
     local topBorder = display.newRect( startX, startY, endX, thickness )
     topBorder.anchorX = 0 
 	topBorder.anchorY = 0

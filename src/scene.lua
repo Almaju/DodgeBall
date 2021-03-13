@@ -27,7 +27,7 @@ local playerFieldCollisionFilter = { categoryBits=8, maskBits=2 }
 
 -- forward declarations and other locals
 local screenW, screenH, halfW, halfH = display.actualContentWidth, display.actualContentHeight, display.contentCenterX, display.contentCenterY
-local player = nil
+local player2 = nil
 
 function scene:create( event )
 
@@ -57,7 +57,7 @@ function scene:create( event )
 
     local ball = newBall({
 		posX=halfW, 
-		posY=halfH 
+		posY=halfH + 25 
 	})
 	ball:addBody({ bounce=0.8, filter=ballCollisionFilter })
 
@@ -85,7 +85,8 @@ function scene:create( event )
 	})
 	playerField2:addBody({ bounce=0, filter=playerFieldCollisionFilter })
 
-	player = newPlayer(halfW, halfH)
+	player1 = newPlayer(halfW - 50, halfH - 50)
+	player2 = newPlayer(halfW + 50, halfH + 50)
 
     -- 
     -- ACTION BUTTON
@@ -101,7 +102,8 @@ function scene:create( event )
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
 	sceneGroup:insert( ball )
-	sceneGroup:insert( player )
+	sceneGroup:insert( player1 )
+	sceneGroup:insert( player2 )
 	sceneGroup:insert( ballField )
 	sceneGroup:insert( playerField1 )
 	sceneGroup:insert( playerField2 )
@@ -115,10 +117,10 @@ local function onAxisEvent( event )
 	local yAxisNumber = 2
 
 	if ( event.axis.number == xAxisNumber ) then
-		player:setXVelocity(event.normalizedValue)
+		player2:setXVelocity(event.normalizedValue)
 	end
 	if ( event.axis.number == yAxisNumber ) then
-	    player:setYVelocity(event.normalizedValue)
+	    player2:setYVelocity(event.normalizedValue)
 	end
 
     -- If the "back" key was pressed on Android, prevent it from backing out of the app
