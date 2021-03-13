@@ -10,8 +10,12 @@ local joykey = require "com.ponywolf.joykey"
 
 -- include Corona's "physics" library
 local physics = require "physics"
+
+--------------------------------------------
+
 local newBall = require("src.classes.ball").newBall
 local newField = require("src.classes.field").newField
+local newPlayer = require("src.classes.player").newPlayer
 
 --- collision filters
 local ballCollisionFilter = { categoryBits=1, maskBits=6 }  
@@ -21,11 +25,9 @@ local playerFieldCollisionFilter = { categoryBits=8, maskBits=2 }
 
 --------------------------------------------
 
-local player = display.newCircle( display.contentCenterX + 10, display.contentCenterY + 10, 10, 10 )
-player:setFillColor( 0.90, 0.44, 0.32 )
-
 -- forward declarations and other locals
 local screenW, screenH, halfW, halfH = display.actualContentWidth, display.actualContentHeight, display.contentCenterX, display.contentCenterY
+local player = nil
 
 function scene:create( event )
 
@@ -83,6 +85,8 @@ function scene:create( event )
 	})
 	playerField2:addBody({ bounce=0, filter=playerFieldCollisionFilter })
 
+	player = newPlayer(halfW, halfH)
+
     -- 
     -- ACTION BUTTON
     --
@@ -102,27 +106,19 @@ function scene:create( event )
 	sceneGroup:insert( playerField1 )
 	sceneGroup:insert( playerField2 )
 
-	-- 
-	-- PLAYER
-	-- 
-    physics.addBody( player, { density=3, friction=0.3, bounce=0, filter=playerCollisionFilter } )
-
 	createStick()
 end
 
 -- Called when an event from the joystick has been reveived
 local function onAxisEvent( event )
-	local velocityMultiplier = 200
+	local xAxisNumber = 1
+	local yAxisNumber = 1
 
-	if ( event.axis.number == 1 ) then
-	    -- x value
-    	local vx, vy = player:getLinearVelocity()
-    	player:setLinearVelocity( event.normalizedValue * velocityMultiplier, vy)
+	if ( event.axis.number == xAxisNumber ) then
+		player:setXVelocity(event.normalizedValue)
 	end
-	if ( event.axis.number == 2 ) then
-	    -- y value
-    	local vx, vy = player:getLinearVelocity()
-    	player:setLinearVelocity( vx, event.normalizedValue * velocityMultiplier)
+	if ( event.axis.number == yAxisNumber ) then
+	    player:setYVelocity(event.normalizedValue)
 	end
 
     -- If the "back" key was pressed on Android, prevent it from backing out of the app
