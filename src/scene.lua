@@ -10,6 +10,8 @@ local joykey = require "com.ponywolf.joykey"
 
 -- include Corona's "physics" library
 local physics = require "physics"
+local newBall = require("src.classes.ball").newBall
+local newField = require("src.classes.field").newField
 
 --------------------------------------------
 
@@ -45,28 +47,8 @@ function scene:create( event )
 	background.anchorY = 0
 	background:setFillColor( 0.15, 0.27, 0.33 )
 
-    -- 
-    -- BALL
-    --
-    local ball = display.newCircle( display.contentCenterX, display.contentCenterY + 20, 5, 5 )
-    ball:setFillColor( 1, 1, 1 )
-    physics.addBody( ball, { density=0.5, friction=0.3, bounce=0.3 } )
-
-    --
-    -- CONTAINER
-    --
-    local topBorder = display.newRect( halfW, display.screenOriginY, screenW, 5 )
-    local bottomBorder = display.newRect( halfW, screenH, screenW, 5 )
-    local leftBorder = display.newRect( display.screenOriginX, halfH, 5, screenH )
-    local rightBorder = display.newRect( screenW, halfH, 5, screenH )
-    topBorder:setFillColor( 1, 0, 0 ) -- red
-    bottomBorder:setFillColor( 0, 1, 0 ) -- green
-    leftBorder:setFillColor( 0, 0, 1 ) -- blue
-    rightBorder:setFillColor( 1, 1, 1 ) -- white
-    physics.addBody( topBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    physics.addBody( bottomBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    physics.addBody( leftBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    physics.addBody( rightBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
+    local ball = newBall( halfW, halfH )
+	local field = newField()
 
     -- 
     -- ACTION BUTTON
@@ -74,18 +56,15 @@ function scene:create( event )
     local actionButton = vjoy.newButton( 32, "actionButton" )
     actionButton.x = display.actualContentWidth - 64
     actionButton.y = display.actualContentHeight - 128
-    
-    local function onBallTap( event )
-        ball:setLinearVelocity( 2, 4 )
-        ball:applyForce( 500, 2000, ball.x, ball.y )
-        return true
-    end
 
-    actionButton:addEventListener( "tap", onBallTap )
+    actionButton:addEventListener( "tap", function()
+		ball:throw(1.5, 10) 
+	end)
 
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
 	sceneGroup:insert( player )
+	sceneGroup:insert( field )
 	sceneGroup:insert( ball )
 
 	-- 
