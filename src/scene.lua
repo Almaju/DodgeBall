@@ -13,9 +13,15 @@ local physics = require "physics"
 local newBall = require("src.classes.ball").newBall
 local newField = require("src.classes.field").newField
 
+--- collision filters
+local ballCollisionFilter = { categoryBits=1, maskBits=6 }  
+local playerCollisionFilter = { categoryBits=2, maskBits=11 }
+local ballFieldCollisionFilter = { categoryBits=4, maskBits=1 }
+local playerFieldCollisionFilter = { categoryBits=8, maskBits=2 }
+
 --------------------------------------------
 
-local player = display.newCircle( display.contentCenterX, display.contentCenterY, 10, 10 )
+local player = display.newCircle( display.contentCenterX + 10, display.contentCenterY + 10, 10, 10 )
 player:setFillColor( 0.90, 0.44, 0.32 )
 
 -- forward declarations and other locals
@@ -47,8 +53,35 @@ function scene:create( event )
 	background.anchorY = 0
 	background:setFillColor( 0.15, 0.27, 0.33 )
 
-    local ball = newBall( halfW, halfH )
-	local field = newField()
+    local ball = newBall({
+		posX=halfW, 
+		posY=halfH 
+	})
+	ball:addBody({ bounce=0.8, filter=ballCollisionFilter })
+
+	local ballField = newField({
+		posX=display.screenOriginX,
+		posY=display.screenOriginY,
+		height=display.actualContentHeight,
+		width=display.actualContentWidth
+	})
+	ballField:addBody({ bounce=0.8, filter=ballFieldCollisionFilter })
+
+	local playerField1 = newField({
+		posX=display.screenOriginX,
+		posY=display.screenOriginY,
+		height=display.contentCenterY,
+		width=display.actualContentWidth
+	})
+	playerField1:addBody({ bounce=0, filter=playerFieldCollisionFilter })
+
+	local playerField2 = newField({
+		posX=display.screenOriginX,
+		posY=display.contentCenterY,
+		height=display.contentCenterY,
+		width=display.actualContentWidth
+	})
+	playerField2:addBody({ bounce=0, filter=playerFieldCollisionFilter })
 
     -- 
     -- ACTION BUTTON
@@ -58,19 +91,21 @@ function scene:create( event )
     actionButton.y = display.actualContentHeight - 128
 
     actionButton:addEventListener( "tap", function()
-		ball:throw(1.5, 10) 
+		ball:throw(100, 10) 
 	end)
 
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
-	sceneGroup:insert( player )
-	sceneGroup:insert( field )
 	sceneGroup:insert( ball )
+	sceneGroup:insert( player )
+	sceneGroup:insert( ballField )
+	sceneGroup:insert( playerField1 )
+	sceneGroup:insert( playerField2 )
 
 	-- 
 	-- PLAYER
 	-- 
-    physics.addBody( player, { density=3, friction=0.3, bounce=0 } )
+    physics.addBody( player, { density=3, friction=0.3, bounce=0, filter=playerCollisionFilter } )
 
 	createStick()
 end

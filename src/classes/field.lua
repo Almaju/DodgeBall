@@ -4,24 +4,44 @@ local startX, startY, endX, endY, halfX, halfY = display.screenOriginX, display.
 
 local _M = {}
 
-function _M.newField()
+function _M.newField(params)
     local field = display.newGroup()
 
-    local topBorder = display.newRect( halfX, startY, endX, 5 )
-    local bottomBorder = display.newRect( halfX, endY, endX, 5 )
-    local leftBorder = display.newRect( startX, halfY, 5, endY )
-    local rightBorder = display.newRect( endX, halfY, 5, endY )
+    local thickness = params.thickness or 5
+    local startX = params.posX
+    local startY = params.posY
+    local endX = startX + params.width - thickness
+    local endY = startY + params.height - thickness
+    local halfX = (endX - startX) / 2
+    local halfY = (endY - startY) / 2
+
+    print(startX, startY, endX, endY, halfX, halfY)
+
+    local topBorder = display.newRect( startX, startY, endX, thickness )
+    topBorder.anchorX = 0 
+	topBorder.anchorY = 0
+    local bottomBorder = display.newRect( startX, endY, endX, thickness )
+    bottomBorder.anchorX = 0 
+	bottomBorder.anchorY = 0
+    local leftBorder = display.newRect( startX, startY, thickness, endY )
+    leftBorder.anchorX = 0 
+	leftBorder.anchorY = 0
+    local rightBorder = display.newRect( endX, startY, thickness, endY )
+    rightBorder.anchorX = 0 
+	rightBorder.anchorY = 0
 
     topBorder:setFillColor( 1, 0, 0 ) -- red
     bottomBorder:setFillColor( 0, 1, 0 ) -- green
     leftBorder:setFillColor( 0, 0, 1 ) -- blue
     rightBorder:setFillColor( 1, 1, 1 ) -- white
 
-    physics.addBody( topBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    physics.addBody( bottomBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    physics.addBody( leftBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-    physics.addBody( rightBorder, "static", { bounce=0.8, filter=floorCollisionFilter } )
-
+    function field:addBody(args)
+        physics.addBody( topBorder, "static", args )
+        physics.addBody( bottomBorder, "static", args )
+        physics.addBody( leftBorder, "static", args )
+        physics.addBody( rightBorder, "static", args )
+    end
+    
     field:insert(topBorder)
     field:insert(bottomBorder)
     field:insert(leftBorder)

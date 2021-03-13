@@ -2,11 +2,18 @@ local physics = require('physics')
 
 local _M = {}
 
-function _M.newBall(posX, posY)
-    local ball = display.newCircle( posX, posY, 5, 5 )
+function _M.newBall(params)
+    local ball = display.newCircle( params.posX, params.posY, 5, 5 )
     ball:setFillColor( 1, 1, 1 )
 
-    physics.addBody( ball, { density=0.5, friction=0.3, bounce=0.3, radius=ball.width / 2 } )
+    function ball:addBody(args)
+        args.bounce = args.density or 0.3
+        args.density = args.density or 0.5
+        args.friction = args.friction or 0.3
+        args.radius = args.radius or ball.width / 2 
+
+        physics.addBody( ball, args )
+    end
 
     function ball:throw(dir, force)
 		dir = math.rad(dir)
